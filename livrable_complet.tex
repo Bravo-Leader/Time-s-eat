@@ -4,9 +4,11 @@
 % ============================================================
 \documentclass[11pt,a4paper,oneside]{report}
 
+\PassOptionsToPackage{backend=bibtex}{biblatex}
 \usepackage{style/consulting}
 \usepackage{graphicx}
 \graphicspath{{img/}}
+\addbibresource{references.bib}
 
 % Surcharge hyperref pour ce document
 \hypersetup{
@@ -88,6 +90,67 @@ Les tableaux de bord de supervision (§1.3) et de pilotage CRM (§2.2) présent�
 % ============================================================
 \chapter{Portefeuille de projets}
 
+% ────────────────────────────────────────────────────────────
+\section{Enjeux et objectifs généraux du portefeuille}
+
+\begin{finding}
+Time'Eats se trouve à un \textbf{tournant stratégique majeur} : l'entreprise doit simultanément consolider son socle technique, accélérer sa croissance nationale et professionnaliser sa DSI — le tout avec \textbf{21 personnes} et un budget de \textbf{1\,700~K€}. Le portefeuille de 11 projets n'est pas un catalogue de chantiers : c'est le \textbf{programme de transformation de l'entreprise pour les 12 prochains mois}. Sans cadre PMO structuré, ce volume de projets simultanés conduit inévitablement à des dérives budgétaires, des conflits de ressources et une perte de valeur livrée.
+\end{finding}
+
+\subsection{Enjeux du portefeuille}
+
+\vspace{4pt}
+\begin{center}
+\renewcommand{\arraystretch}{1.6}
+\begin{tabularx}{\textwidth}{C{2.5cm} L{5.5cm} L{6cm}}
+\toprule
+\rowcolor{cnNavy}
+\th{Dimension} & \th{Enjeu identifié} & \th{Conséquence si non adressé} \\
+\midrule
+\textbf{Stratégique} & Aligner les 11 projets IT sur les priorités business de Time'Eats (croissance nationale, relation client, compétitivité) & Investissement IT déconnecté du terrain — ROI non perçu par la direction \\
+\rowcolor{cnIce}
+\textbf{Financier} & Maîtriser un budget global de 1\,700~K€ réparti sur des prestataires multiples, des modes contractuels variés et 12 mois d'exécution & Dépassements en cascade — arbitrages budgétaires brutaux en cours d'année \\
+\textbf{Capacitaire} & Absorber 11 projets Build simultanés sans dégrader le Run (MCO), avec une DSI de 21 personnes dont 5 chefs de projet & Épuisement des équipes, glissement des délais, qualité sacrifiée \\
+\rowcolor{cnIce}
+\textbf{Opérationnel} & Gérer les dépendances inter-projets (Office~365 bloquant 3 projets majeurs) et les risques de propagation des retards & Effet domino sur CRM, Refonte Web et Apps mobiles \\
+\textbf{Humain} & Piloter les ESN (contrats, livrables, satisfaction) tout en développant les compétences internes & Dépendance excessive aux prestataires, perte de souveraineté technique \\
+\rowcolor{cnIce}
+\textbf{Gouvernance} & Professionnaliser la cellule PMO pour produire une vision consolidée fiable en temps réel & Décisions prises sur des données obsolètes ou incomplètes \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Objectifs généraux du portefeuille}
+
+Ces objectifs sont \textbf{mesurables et suivis} via le Cockpit DSI (§1.3). Ils constituent le cadre de succès du portefeuille que le PMO présente au Comité Stratégique mensuel.
+
+\vspace{4pt}
+\begin{center}
+\renewcommand{\arraystretch}{1.6}
+\begin{tabularx}{\textwidth}{C{0.4cm} L{5.5cm} C{2.5cm} C{2.5cm} L{2.5cm}}
+\toprule
+\rowcolor{cnNavy}
+\th{\#} & \th{Objectif} & \th{Indicateur associé} & \th{Cible} & \th{Horizon} \\
+\midrule
+O1 & Livrer \textbf{100\,\%} des projets critiques (score $\geq 3{,}50$) dans le périmètre validé & Taux de respect du périmètre & 100\,\% & Déc. N \\
+\rowcolor{cnIce}
+O2 & Maîtriser le budget total du portefeuille à \textbf{$\pm$5\,\%} du prévisionnel & Taux de dépassement budgétaire & $\leq 5\,\%$ & Déc. N \\
+O3 & Respecter les jalons critiques du portefeuille (démarrage, go-live) & \% jalons respectés & $\geq 80\,\%$ & Continu \\
+\rowcolor{cnIce}
+O4 & Garantir la \textbf{continuité de service} (Run) pendant la phase Build & Uptime moyen des 9 serveurs & $\geq 99\,\%$ & Mensuel \\
+O5 & Résoudre les incidents P1 en moins de 5 jours ouvrés & Délai moyen résolution P1 & $\leq 5\,j$ & Continu \\
+\rowcolor{cnIce}
+O6 & Professionnaliser le PMO via un référentiel documentaire appliqué sur 100\,\% des projets & Taux de réutilisation des templates & $\geq 60\,\%$ & Juin N \\
+O7 & Identifier \textbf{en amont} les risques majeurs (avant impact) & \% risques identifiés avant occurrence & $\geq 70\,\%$ & Continu \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{alert}
+\textbf{Hiérarchisation des objectifs :} O4 (continuité de service) et O5 (incidents P1) sont non négociables — un incident P1 non résolu sous 5 jours impacte directement les revenus de Time'Eats (plateforme de livraison). Les objectifs O1 à O3 sont le cœur de la mission PMO.
+\end{alert}
+
+\newpage
 % ────────────────────────────────────────────────────────────
 \section{Méthodologie PMO Hybride}
 
@@ -442,6 +505,125 @@ Chaque chef de projet met à jour son avancement et son RAG directement dans le 
   \par\vspace{4pt}
   {\small\textcolor{cnSlate}{\textit{Capture — Onglet Portefeuille : supervision des 11 projets, score de priorisation, RAG exécution (Cockpit DSI — Avr 2026)}}}
 \end{center}
+
+\newpage
+% ────────────────────────────────────────────────────────────
+\section{Référentiel des indicateurs de pilotage}
+
+\begin{finding}
+Ce référentiel constitue la \textbf{liste exhaustive et consolidée} de tous les indicateurs mis en place dans le cadre PMO Time'Eats. Il couvre quatre niveaux de lecture : la supervision du portefeuille (vision DSI), le pilotage de projet (vision chef de projet), la performance PMO (vision amélioration continue) et les indicateurs opérationnels (vision infrastructure). Chaque indicateur est rattaché à son onglet source dans le Cockpit DSI.
+\end{finding}
+
+\subsection{Indicateurs de supervision du portefeuille}
+
+Ces indicateurs alimentent l'\textbf{onglet Portefeuille} du Cockpit DSI via \texttt{GET /api/projects} et \texttt{GET /api/stats}.
+
+\vspace{4pt}
+\begin{center}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabularx}{\textwidth}{L{4.5cm} L{3.5cm} C{2cm} C{2cm} L{2cm}}
+\toprule
+\rowcolor{cnNavy}
+\th{Indicateur} & \th{Définition} & \th{Cible} & \th{Seuil alerte} & \th{Fréquence} \\
+\midrule
+Score de priorisation & $\sum$ (critère $\times$ poids) sur 5 axes & $\geq 3{,}50$ (Vert) & $< 2{,}75$ (Rouge) & Statique \\
+\rowcolor{cnIce}
+Statut RAG exécution & Rouge / Ambre / Vert sur Coûts + Délais + Qualité & Vert & Rouge & Mensuel \\
+Avancement physique & \% de réalisation déclaré par le CP & Selon jalon & Retard $>10\,j$ & Mensuel \\
+\rowcolor{cnIce}
+Budget consommé / Budget prévu & Taux d'engagement budgétaire & $\leq 100\,\%$ & $> 110\,\%$ & Mensuel \\
+Nombre de projets en alerte & Nb de projets en statut Ambre ou Rouge & 0 Rouge & $\geq 2$ Rouge & Hebdomadaire \\
+\rowcolor{cnIce}
+Dépendances critiques actives & Nb de projets bloqués par un prérequis non livré & 0 & $\geq 1$ bloquant & Hebdomadaire \\
+Budget total engagé (portefeuille) & Somme des budgets consommés sur 11 projets & $\leq 1\,700$\,K€ & $>1\,785$\,K€ & Mensuel \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Indicateurs de pilotage projet (CRM — généralisable)}
+
+Ces indicateurs alimentent l'\textbf{onglet Projet CRM} du Cockpit DSI via \texttt{GET /api/crm}. Ils sont applicables à tout projet du portefeuille disposant d'un PMP complet.
+
+\vspace{4pt}
+\begin{center}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabularx}{\textwidth}{C{1.5cm} L{4cm} L{3.5cm} C{2cm} C{2cm} L{1.5cm}}
+\toprule
+\rowcolor{cnNavy}
+\th{Axe} & \th{Indicateur} & \th{Calcul / Source} & \th{Cible} & \th{Seuil alerte} & \th{Fréq.} \\
+\midrule
+\multirow{3}{*}{\textbf{Coûts}} & Budget consommé / prévu & Comptabilité & $\leq 100\,\%$ & $> 110\,\%$ & Mensuel \\
+\rowcolor{cnIce}
+& IPC (Valeur acquise) & $\mathrm{VA} / \mathrm{CR}$ (EVM) & $\geq 0{,}9$ & $< 0{,}8$ & Mensuel \\
+& Réserve pour aléas restante & Budget initial & $> 0\,\%$ & $< 5\,\%$ & Mensuel \\
+\midrule
+\rowcolor{cnIce}
+\multirow{3}{*}{\textbf{Délais}} & Jalons respectés / planifiés & Planning & $= 100\,\%$ & $< 80\,\%$ & Mensuel \\
+& IPD (Valeur acquise) & $\mathrm{VA} / \mathrm{VP}$ (EVM) & $\geq 0{,}9$ & $< 0{,}8$ & Mensuel \\
+\rowcolor{cnIce}
+& Retard cumulé (j. ouvrés) & Planning & 0 jour & $> 10\,j$ & Mensuel \\
+\midrule
+\multirow{3}{*}{\textbf{Qualité}} & Taux de couverture des tests & Log anomalies & $\geq 80\,\%$ & $< 60\,\%$ & Par sprint \\
+\rowcolor{cnIce}
+& Anomalies bloquantes ouvertes & Log anomalies & 0 & $> 2$ & Hebdom. \\
+& Taux de satisfaction recette & Questionnaire métier & $\geq 85\,\%$ & $< 70\,\%$ & À la recette \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Indicateurs opérationnels (infrastructure et incidents)}
+
+Ces indicateurs alimentent l'\textbf{onglet Ops \& Risques} du Cockpit DSI via \texttt{GET /api/servers} et \texttt{GET /api/incidents}.
+
+\vspace{4pt}
+\begin{center}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabularx}{\textwidth}{L{4.5cm} L{4cm} C{2cm} C{2cm} L{2cm}}
+\toprule
+\rowcolor{cnNavy}
+\th{Indicateur} & \th{Définition} & \th{Cible} & \th{Seuil alerte} & \th{Fréquence} \\
+\midrule
+Uptime moyen (9 serveurs) & \% disponibilité des serveurs on-premise & $\geq 99\,\%$ & $< 98\,\%$ & Temps réel \\
+\rowcolor{cnIce}
+Incidents P1 actifs & Incidents critiques (service arrêté) ouverts & 0 & $\geq 1$ & Temps réel \\
+Incidents P2 actifs & Incidents majeurs (dégradation service) ouverts & 0 & $\geq 3$ & Quotidien \\
+\rowcolor{cnIce}
+Délai moyen résolution P1 & Délai entre ouverture et clôture d'un P1 & $\leq 5\,j$ & $> 5\,j$ & Par incident \\
+Points bloquants ESN ouverts & Nb de blocages inter-équipes non levés & 0 & $\geq 2$ & Hebdomadaire \\
+\rowcolor{cnIce}
+Ancienneté dernier CR ESN & Nb de jours depuis le dernier compte-rendu & $\leq 14\,j$ & $> 30\,j$ & Mensuel \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Indicateurs de performance PMO (amélioration continue)}
+
+Ces indicateurs alimentent la \textbf{section KPIs PMO} de l'onglet Ops \& Risques, calculés depuis les collections \texttt{projects} et \texttt{incidents}.
+
+\vspace{4pt}
+\begin{center}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabularx}{\textwidth}{L{4.8cm} L{3.5cm} C{2cm} C{2cm} L{2cm}}
+\toprule
+\rowcolor{cnNavy}
+\th{Indicateur PMO} & \th{Calcul} & \th{Cible} & \th{Valeur Avr N} & \th{Fréquence} \\
+\midrule
+\% projets dans les délais & Projets Vert délai / 11 & $\geq 80\,\%$ & n/d & Mensuel \\
+\rowcolor{cnIce}
+\% projets dans le budget & Projets Vert coût / 11 & $\geq 85\,\%$ & 100\,\% & Mensuel \\
+Taux de satisfaction recette & Moyenne des questionnaires métier & $\geq 80\,\%$ & n/d & Par projet \\
+\rowcolor{cnIce}
+\% risques identifiés en amont & Risques préventifs / total risques & $\geq 70\,\%$ & 100\,\% & Semestriel \\
+Taux de réutilisation templates & Projets utilisant le référentiel / 11 & $\geq 60\,\%$ & n/d & Semestriel \\
+\rowcolor{cnIce}
+Nb de REX produits & Fiches REX rédigées à la clôture & 1 / projet clos & 0 (phase init) & Par clôture \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{reco}
+\textbf{Lecture croisée des indicateurs :} le Cockpit DSI est conçu pour que le DSI puisse passer de la vue macro (portefeuille, budget global) à la vue micro (KPIs d'un projet, détail d'un incident P1) en un seul clic. La cohérence entre les niveaux — supervision, pilotage, opérationnel, PMO — garantit qu'aucun signal faible ne passe entre les mailles.
+\end{reco}
 
 \newpage
 
@@ -918,10 +1100,10 @@ Cette démarche ne représente \textbf{aucun coût additionnel} : le Cockpit DSI
 \midrule
 \multicolumn{5}{l}{\cellcolor{cnNavy!15}\textbf{\textcolor{cnNavy}{Axe 1 — Définir, prioriser et faire vivre le portefeuille (8 pts)}}} \\
 \midrule
-1 & Processus de management basé sur standards & 2 pts & \cellcolor{cnGreen!25}Oui & §1.1 \\
+1 & Processus de management basé sur standards & 2 pts & \cellcolor{cnGreen!25}Oui & §1.2 \\
 \rowcolor{cnIce}
-2 & Plan du référentiel documentaire & 3 pts & \cellcolor{cnGreen!25}Oui & §1.2 \\
-3 & Template tableau de bord supervision & 3 pts & \cellcolor{cnGreen!25}Oui & §1.3 \\
+2 & Plan du référentiel documentaire & 3 pts & \cellcolor{cnGreen!25}Oui & §1.3 \\
+3 & Template tableau de bord supervision & 3 pts & \cellcolor{cnGreen!25}Oui & §1.4 \\
 \midrule
 \multicolumn{5}{l}{\cellcolor{cnNavy!15}\textbf{\textcolor{cnNavy}{Axe 2 — Superviser et conduire les projets IT (5 pts)}}} \\
 \midrule
