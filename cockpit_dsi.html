@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cockpit DSI — Time'Eats</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #0f1117; --surface: #1a1d27; --surface2: #22263a; --border: #2e3350;
+      --accent: #3b6fff; --green: #22c55e; --orange: #f59e0b; --red: #ef4444;
+      --blue: #3b82f6; --text: #e2e8f0; --muted: #8892b0; --radius: 12px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+
+    header {
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 0 32px; display: flex; align-items: center; justify-content: space-between;
+      height: 60px; position: sticky; top: 0; z-index: 100;
+    }
+    .logo { font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 12px; }
+    .logo-badge {
+      background: linear-gradient(135deg, #f59e0b, #ef4444);
+      color: #fff; padding: 3px 10px; border-radius: 6px; font-size: .8rem; font-weight: 800;
+    }
+    .nav-tabs { display: flex; gap: 4px; }
+    .nav-tab {
+      padding: 6px 16px; border-radius: 8px; border: none; cursor: pointer;
+      font-size: .85rem; font-weight: 500; background: transparent; color: var(--muted); transition: all .2s;
+    }
+    .nav-tab:hover { background: var(--surface2); color: var(--text); }
+    .nav-tab.active { background: var(--accent); color: #fff; }
+    .header-right { font-size: .8rem; color: var(--muted); }
+    .header-right strong { color: var(--text); }
+
+    .view { display: none; padding: 28px 32px; }
+    .view.active { display: block; }
+    .view-title { font-size: 1.35rem; font-weight: 700; margin-bottom: 4px; }
+    .view-sub { color: var(--muted); font-size: .85rem; margin-bottom: 22px; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+    .span2 { grid-column: span 2; }
+
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+    .card-title { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 14px; }
+
+    .stat-row { display: flex; gap: 16px; margin-bottom: 22px; }
+    .stat-card {
+      flex: 1; background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px 20px; display: flex; align-items: center; gap: 14px;
+    }
+    .stat-icon { font-size: 1.7rem; }
+    .stat-label { font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+    .stat-val { font-size: 1.55rem; font-weight: 700; line-height: 1.1; }
+    .stat-delta { font-size: .76rem; margin-top: 2px; }
+    .delta-up { color: var(--green); } .delta-down { color: var(--red); } .delta-neu { color: var(--muted); }
+
+    .rag { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: .72rem; font-weight: 600; }
+    .rag-green { background: rgba(34,197,94,.15); color: var(--green); border: 1px solid rgba(34,197,94,.3); }
+    .rag-orange { background: rgba(245,158,11,.15); color: var(--orange); border: 1px solid rgba(245,158,11,.3); }
+    .rag-red { background: rgba(239,68,68,.15); color: var(--red); border: 1px solid rgba(239,68,68,.3); }
+    .rag-blue { background: rgba(59,111,255,.15); color: var(--blue); border: 1px solid rgba(59,111,255,.3); }
+
+    .proj-table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+    .proj-table th { text-align: left; padding: 9px 12px; color: var(--muted); font-size: .68rem; text-transform: uppercase; letter-spacing: .06em; border-bottom: 1px solid var(--border); }
+    .proj-table td { padding: 10px 12px; border-bottom: 1px solid rgba(46,51,80,.5); vertical-align: middle; }
+    .proj-table tr:last-child td { border-bottom: none; }
+    .proj-table tr:hover td { background: rgba(59,111,255,.04); }
+    .proj-name { font-weight: 600; }
+    .proj-desc { font-size: .72rem; color: var(--muted); margin-top: 2px; }
+
+    .progress-wrap { background: var(--surface2); border-radius: 4px; height: 7px; overflow: hidden; }
+    .progress-bar { height: 100%; border-radius: 4px; }
+    .bar-green { background: linear-gradient(90deg, #16a34a, #22c55e); }
+    .bar-orange { background: linear-gradient(90deg, #d97706, #f59e0b); }
+    .bar-red { background: linear-gradient(90deg, #b91c1c, #ef4444); }
+    .bar-blue { background: linear-gradient(90deg, #1d4ed8, #3b82f6); }
+
+    .score-stars { display: flex; gap: 2px; margin-top: 2px; }
+    .star { width: 8px; height: 8px; border-radius: 50%; }
+
+    .section-label { font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin: 22px 0 10px; font-weight: 600; }
+
+    .uptime-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px,1fr)); gap: 12px; margin-bottom: 22px; }
+    .uptime-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      padding: 14px 16px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .uptime-name { font-size: .82rem; font-weight: 600; }
+    .uptime-env { font-size: .7rem; color: var(--muted); margin-top: 2px; }
+    .uptime-pct { font-size: 1.35rem; font-weight: 700; }
+
+    .incident-list { display: flex; flex-direction: column; gap: 9px; }
+    .incident-item {
+      background: var(--surface2); border-radius: 8px; padding: 11px 14px;
+      display: flex; align-items: flex-start; gap: 10px; border-left: 3px solid transparent;
+    }
+    .inc-p1 { border-left-color: var(--red); }
+    .inc-p2 { border-left-color: var(--orange); }
+    .inc-p3 { border-left-color: var(--accent); }
+    .inc-badge { font-size: .68rem; font-weight: 700; padding: 2px 7px; border-radius: 4px; white-space: nowrap; margin-top: 1px; }
+    .inc-title { font-size: .82rem; font-weight: 600; }
+    .inc-meta { font-size: .72rem; color: var(--muted); margin-top: 2px; }
+
+    .esn-list { display: flex; flex-direction: column; gap: 9px; }
+    .esn-item {
+      background: var(--surface2); border-radius: 10px; padding: 13px 16px;
+      display: grid; grid-template-columns: 1fr auto; gap: 6px; align-items: center;
+    }
+    .esn-name { font-weight: 600; font-size: .88rem; }
+    .esn-proj { font-size: .74rem; color: var(--muted); }
+    .esn-cr { font-size: .74rem; color: var(--muted); margin-top: 3px; }
+    .days-badge { font-size: .72rem; font-weight: 600; padding: 3px 9px; border-radius: 20px; }
+    .days-ok { background: rgba(34,197,94,.15); color: var(--green); }
+    .days-warn { background: rgba(245,158,11,.15); color: var(--orange); }
+    .days-alert { background: rgba(239,68,68,.15); color: var(--red); }
+
+    .block-list { display: flex; flex-direction: column; gap: 9px; }
+    .block-item { background: var(--surface2); border-radius: 8px; padding: 11px 14px; border-left: 3px solid var(--orange); }
+    .block-title { font-size: .82rem; font-weight: 600; }
+    .block-meta { font-size: .72rem; color: var(--muted); margin-top: 3px; display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .patch-list { display: flex; flex-direction: column; gap: 7px; }
+    .patch-item { background: var(--surface2); border-radius: 8px; padding: 9px 13px; display: flex; justify-content: space-between; align-items: flex-start; }
+    .patch-title { font-size: .8rem; font-weight: 600; }
+    .patch-meta { font-size: .72rem; color: var(--muted); margin-top: 2px; }
+    .patch-date { font-size: .72rem; color: var(--muted); white-space: nowrap; margin-left: 8px; }
+
+    .dep-tag { display: inline-block; font-size: .68rem; background: rgba(59,111,255,.15); color: var(--blue); border: 1px solid rgba(59,111,255,.25); padding: 1px 6px; border-radius: 4px; margin: 1px; }
+
+    canvas { max-width: 100%; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    @media (max-width: 900px) { .grid-2,.grid-3 { grid-template-columns: 1fr; } .stat-row { flex-direction: column; } .span2 { grid-column: span 1; } }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <span class="logo-badge">Time'EATS</span>
+    Cockpit DSI — Portefeuille Projets
+  </div>
+  <nav class="nav-tabs">
+    <button class="nav-tab active" onclick="showView('strategique',this)">Stratégique</button>
+    <button class="nav-tab" onclick="showView('velocite',this)">Vélocité</button>
+    <button class="nav-tab" onclick="showView('ops',this)">Ops & Risques</button>
+    <button class="nav-tab" onclick="showView('esn',this)">ESN</button>
+  </nav>
+  <div class="header-right">20 avril 2026 · DSI <strong>21 personnes</strong> · 6 dév. + lead</div>
+</header>
+
+<!-- ═══ VUE STRATÉGIQUE ═══ -->
+<div class="view active" id="view-strategique">
+  <div class="view-title">Vue Stratégique — Mur des Projets</div>
+  <div class="view-sub">11 projets au portefeuille · Budget total 1 700 K€ · Démarrage : avril 2026 (Rennes)</div>
+
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="stat-icon">💰</div>
+      <div>
+        <div class="stat-label">Budget engagé</div>
+        <div class="stat-val">59 K€</div>
+        <div class="stat-delta delta-neu">sur 1 700 K€ total (3,5%)</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🚀</div>
+      <div>
+        <div class="stat-label">Projets actifs</div>
+        <div class="stat-val">3 / 11</div>
+        <div class="stat-delta delta-neu">Office 365 · Refonte Web · CI/CD</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">⚠️</div>
+      <div>
+        <div class="stat-label">Projets en alerte</div>
+        <div class="stat-val">3</div>
+        <div class="stat-delta delta-down">Refonte Web · App Fourn. · Migration Azure</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📅</div>
+      <div>
+        <div class="stat-label">Prochain lancement</div>
+        <div class="stat-val">Mai 2026</div>
+        <div class="stat-delta delta-neu">App Mobile Clients + Fournisseurs</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">Budget prévisionnel mensuel vs consommé réel (K€)</div>
+      <div style="height:170px;"><canvas id="chartBudget"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Score de priorité par projet (Strat×5 + Rent×3 + Risque×2 / 50)</div>
+      <div style="height:170px;"><canvas id="chartPrio"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">État du portefeuille — 11 projets Time'Eats</div>
+    <table class="proj-table">
+      <thead>
+        <tr>
+          <th>Projet</th>
+          <th>Début</th>
+          <th>Durée</th>
+          <th>Budget</th>
+          <th>Charges</th>
+          <th>Strat</th>
+          <th>Rent.</th>
+          <th>Risque</th>
+          <th>Score /50</th>
+          <th>Avancement</th>
+          <th>Statut</th>
+          <th>Chef de projet</th>
+          <th>Dépendances</th>
+        </tr>
+      </thead>
+      <tbody id="proj-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══ VUE VÉLOCITÉ ═══ -->
+<div class="view" id="view-velocite">
+  <div class="view-title">Vue Vélocité — DevOps & Équipe</div>
+  <div class="view-sub">6 développeurs + 1 lead developer · Pipelines CI/CD en cours de déploiement</div>
+
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="stat-icon">🚀</div>
+      <div>
+        <div class="stat-label">Déploiements (7 jours)</div>
+        <div class="stat-val">7</div>
+        <div class="stat-delta delta-up">+5 vs semaine S14 (pipeline en montée)</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">⏱</div>
+      <div>
+        <div class="stat-label">Lead Time moyen</div>
+        <div class="stat-val">n/d</div>
+        <div class="stat-delta delta-neu">CI/CD non finalisé — mesure à J+30</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🔴</div>
+      <div>
+        <div class="stat-label">Taux d'échec builds</div>
+        <div class="stat-val">28%</div>
+        <div class="stat-delta delta-down">Pipeline en configuration (attendu)</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">👩‍💻</div>
+      <div>
+        <div class="stat-label">Charge absorbée / dev</div>
+        <div class="stat-val">~12 j/h</div>
+        <div class="stat-delta delta-neu">sur 3 sem. · 3 projets actifs</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">Déploiements hebdomadaires depuis lancement (S14 = semaine de lancement)</div>
+      <div style="height:210px;"><canvas id="chartDeploy"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Burn-down — Refonte Web · Sprint 2 (Avr 15–28)</div>
+      <div style="height:210px;"><canvas id="chartBurndown"></canvas></div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Charge par développeur — j/h consommés depuis le 1er avril</div>
+      <div style="height:210px;"><canvas id="chartCharge"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Répartition des charges totales par projet (j/h planifiés)</div>
+      <div style="height:210px;"><canvas id="chartCharges"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ VUE OPS & RISQUES ═══ -->
+<div class="view" id="view-ops">
+  <div class="view-title">Vue Ops & Risques</div>
+  <div class="view-sub">Infrastructure on-premise Rennes (Win Server 2016 / SQL 2016) · Migration Azure prévue août 2026</div>
+
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="stat-icon">🟢</div>
+      <div>
+        <div class="stat-label">Uptime moyen</div>
+        <div class="stat-val">99,3%</div>
+        <div class="stat-delta delta-up">9 serveurs surveillés</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🔥</div>
+      <div>
+        <div class="stat-label">Incidents P1 ouverts</div>
+        <div class="stat-val">2</div>
+        <div class="stat-delta delta-down">Blocage Refonte Web + CI/CD</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🛡</div>
+      <div>
+        <div class="stat-label">Risque Migration Azure</div>
+        <div class="stat-val">1/5</div>
+        <div class="stat-delta delta-down">Maîtrise critique — plan d'atténuation requis</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📊</div>
+      <div>
+        <div class="stat-label">Consommation O365</div>
+        <div class="stat-val">22 K€</div>
+        <div class="stat-delta delta-up">22% du budget (19 j / 90 j)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Disponibilité des serveurs — Siège Rennes (on-premise)</div>
+  <div class="uptime-grid" id="uptime-grid"></div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Radar des risques projet (maîtrise 1=élevé, 5=faible)</div>
+      <div style="height:260px;"><canvas id="chartRadar"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Incidents actifs</div>
+      <div class="incident-list" id="incident-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ VUE ESN ═══ -->
+<div class="view" id="view-esn">
+  <div class="view-title">Vue Relationnelle — ESN & Prestataires</div>
+  <div class="view-sub">Time'Eats confie une partie de ses projets à des ESN selon disponibilité et compétences techniques</div>
+
+  <div class="stat-row">
+    <div class="stat-card">
+      <div class="stat-icon">🤝</div>
+      <div>
+        <div class="stat-label">ESN mobilisées</div>
+        <div class="stat-val">4</div>
+        <div class="stat-delta">sur 11 projets (4 internes)</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🚧</div>
+      <div>
+        <div class="stat-label">Points bloquants</div>
+        <div class="stat-val">4</div>
+        <div class="stat-delta delta-down">dont 1 bloque le sprint Refonte Web</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📋</div>
+      <div>
+        <div class="stat-label">CR reçus (avril)</div>
+        <div class="stat-val">3</div>
+        <div class="stat-delta delta-up">Kick-off Econocom · Lancement Sopra</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📨</div>
+      <div>
+        <div class="stat-label">RFP en attente</div>
+        <div class="stat-val">1</div>
+        <div class="stat-delta delta-down">CGI — réponse CRM due le 30 avr.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Derniers contacts par ESN / équipe</div>
+      <div class="esn-list" id="esn-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Points bloquants ouverts</div>
+      <div class="block-list" id="block-list"></div>
+      <div class="card-title" style="margin-top:22px;">Patch Notes & Livrables récents</div>
+      <div class="patch-list" id="patch-list"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── NAVIGATION ───────────────────────────────────────────────────────────
+function showView(id, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ─── DONNÉES RÉELLES TIME'EATS ────────────────────────────────────────────
+// Source : contexte_timeEat.pdf + diagramme_gantt.puml
+// Date de référence : 20 avril 2026 (postulat : Avril N)
+
+const PROJECTS = [
+  {
+    name: "Office 365", desc: "Outils collaboration & bureautique",
+    debut: "Avr 2026", duree: "3 mois", budget: 100, charges: 220,
+    strat: 4, rent: 2, risque: 3,
+    adv: 25, conso: 22, rag: "green", statut: "En cours",
+    chef: "M. Dupont", esn: "Econocom",
+    deps: ["prérequis CRM","prérequis App Clients","prérequis App Fourn."]
+  },
+  {
+    name: "Refonte Web", desc: "App web moderne, responsive, s'interface avec CRM",
+    debut: "Avr 2026", duree: "6 mois", budget: 300, charges: 400,
+    strat: 5, rent: 5, risque: 2,
+    adv: 8, conso: 18, rag: "orange", statut: "En cours",
+    chef: "S. Martin", esn: "Sopra Steria",
+    deps: ["requis pour App Clients","s'interface avec CRM","hébergé sur Azure (Migration)"]
+  },
+  {
+    name: "CI/CD", desc: "Plateforme de livraison continue",
+    debut: "Avr 2026", duree: "3 mois", budget: 100, charges: 300,
+    strat: 3, rent: 3, risque: 3,
+    adv: 20, conso: 19, rag: "green", statut: "En cours",
+    chef: "T. Bernard", esn: "Interne",
+    deps: ["déploie Refonte Web","déploie App Clients","déploie App Fourn."]
+  },
+  {
+    name: "App Mobile Clients", desc: "Commande & réservation, intermédiation fournisseurs",
+    debut: "Mai 2026", duree: "8 mois", budget: 150, charges: 200,
+    strat: 5, rent: 5, risque: 3,
+    adv: 0, conso: 0, rag: "green", statut: "Planifié",
+    chef: "M. Dupont", esn: "Capgemini",
+    deps: ["nécessite Office 365","nécessite Refonte Web"]
+  },
+  {
+    name: "App Mobile Fournisseurs", desc: "Plateforme traiteurs & chefs à domicile",
+    debut: "Mai 2026", duree: "8 mois", budget: 200, charges: 250,
+    strat: 5, rent: 5, risque: 2,
+    adv: 0, conso: 0, rag: "orange", statut: "Planifié",
+    chef: "S. Martin", esn: "Capgemini",
+    deps: ["nécessite Office 365","données fournisseurs depuis CRM"]
+  },
+  {
+    name: "CRM", desc: "Progiciel CRM — données clients & pilier croissance",
+    debut: "Juin 2026", duree: "6 mois", budget: 250, charges: 300,
+    strat: 5, rent: 3, risque: 4,
+    adv: 0, conso: 0, rag: "green", statut: "Planifié",
+    chef: "L. Moreau", esn: "CGI",
+    deps: ["nécessite Office 365","alimenté par Refonte Web","données vers App Clients/Fourn."]
+  },
+  {
+    name: "Auth. Forte (MFA)", desc: "Authentification multi-facteurs — 200 salariés",
+    debut: "Juil 2026", duree: "4 mois", budget: 150, charges: 120,
+    strat: 5, rent: 3, risque: 4,
+    adv: 0, conso: 0, rag: "green", statut: "Planifié",
+    chef: "T. Bernard", esn: "Interne",
+    deps: ["sécurise Refonte Web"]
+  },
+  {
+    name: "Migration Azure", desc: "Migration .NET 4.6.2 / Win Server 2016 → MS Azure",
+    debut: "Août 2026", duree: "5 mois", budget: 200, charges: 300,
+    strat: 3, rent: 4, risque: 1,
+    adv: 0, conso: 0, rag: "red", statut: "Planifié",
+    chef: "A. Petit", esn: "Sopra Steria",
+    deps: ["héberge Refonte Web","nécessite CI/CD finalisé"]
+  },
+  {
+    name: "MAJ Outils Paie", desc: "Mise à jour réglementaire — paiement des salariés",
+    debut: "Sep 2026", duree: "3 mois", budget: 50, charges: 50,
+    strat: 5, rent: 1, risque: 4,
+    adv: 0, conso: 0, rag: "green", statut: "Planifié",
+    chef: "L. Moreau", esn: "Interne",
+    deps: []
+  },
+  {
+    name: "Stockage & Fichiers", desc: "Solution centralisée, accès différencié par population",
+    debut: "Oct 2026", duree: "3 mois", budget: 100, charges: 80,
+    strat: 4, rent: 3, risque: 3,
+    adv: 0, conso: 0, rag: "green", statut: "Planifié",
+    chef: "A. Petit", esn: "Interne",
+    deps: []
+  },
+  {
+    name: "Sauvegarde Cloud", desc: "Sauvegarde automatisée — continuité de service",
+    debut: "Oct 2026", duree: "4 mois", budget: 100, charges: 100,
+    strat: 5, rent: 3, risque: 5,
+    adv: 0, conso: 0, rag: "green", statut: "Planifié",
+    chef: "A. Petit", esn: "Interne",
+    deps: []
+  },
+];
+
+const SERVERS = [
+  { name:"Serveur Prod (Suivi Prod.)", env:"Windows Server 2016 — Rennes", uptime:99.7, rag:"green" },
+  { name:"SQL Server (Suivi Prod.)", env:"SQL Server 2016 — Rennes", uptime:99.5, rag:"green" },
+  { name:"Serveur R&D (Recettes)", env:"Windows Server 2016 — Rennes", uptime:99.9, rag:"green" },
+  { name:"SQL Server (R&D Recettes)", env:"SQL Server 2016 — Rennes", uptime:99.1, rag:"green" },
+  { name:"Serveur Métier 1 (Apps Dir.)", env:"Windows Server 2016 — Rennes", uptime:97.8, rag:"orange" },
+  { name:"Serveur Métier 2 (Apps Dir.)", env:"Windows Server 2016 — Rennes", uptime:99.4, rag:"green" },
+  { name:"SQL Server Partagé (Métier)", env:"SQL Server 2016 — Rennes", uptime:99.6, rag:"green" },
+  { name:"NAS Fichiers Nœud 1", env:"Serveur de fichiers redondé — Rennes", uptime:100.0, rag:"green" },
+  { name:"NAS Fichiers Nœud 2", env:"Serveur de fichiers redondé — Rennes", uptime:100.0, rag:"green" },
+];
+
+const INCIDENTS = [
+  { p:"P1", title:"Env. dev Refonte Web inaccessible depuis poste Sopra Steria (VPN)", proj:"Refonte Web", age:"3j", color:"inc-p1", bc:"rgba(239,68,68,.2)", tc:"#ef4444" },
+  { p:"P1", title:"Pipeline CI/CD Jenkins — build agent non joignable réseau dev", proj:"CI/CD", age:"1j", color:"inc-p1", bc:"rgba(239,68,68,.2)", tc:"#ef4444" },
+  { p:"P2", title:"Serveur Métier 1 — latences >2s sur applis direction (congés/frais)", proj:"Infra", age:"6h", color:"inc-p2", bc:"rgba(245,158,11,.2)", tc:"#f59e0b" },
+  { p:"P3", title:"Azure DevOps — compte de service non provisionné (Migration Azure préprod)", proj:"Migration Azure", age:"4j", color:"inc-p3", bc:"rgba(59,111,255,.2)", tc:"#3b6fff" },
+];
+
+const ESN_CONTACTS = [
+  { name:"Econocom", proj:"Office 365", cr:"Kick-off déploiement O365 — plan de migration mailboxes validé", days:3, note:4.0 },
+  { name:"Sopra Steria", proj:"Refonte Web · Migration Azure", cr:"Réunion lancement Refonte Web S14 — setup env. dev en cours", days:7, note:3.5 },
+  { name:"Capgemini", proj:"App Mobile Clients · App Mobile Fournisseurs", cr:"Présentation d'offre reçue — revue technique prévue le 28 avr.", days:12, note: null },
+  { name:"CGI", proj:"CRM", cr:"RFP envoyé le 6 avril — réponse attendue avant le 30 avril", days:14, note: null },
+  { name:"Équipe interne", proj:"CI/CD · Auth. Forte · MAJ Paie · Stockage · Sauvegarde · Migration Azure", cr:"Stand-up quotidien — montée en charge pipeline CI/CD en cours", days:1, note:null },
+];
+
+const BLOCKING = [
+  { title:"Accès VPN Sopra Steria non configuré — bloque setup environnement Refonte Web", proj:"Refonte Web", days:3, resp:"DSI Infra / Sopra Steria" },
+  { title:"Licences Azure DevOps non provisionnées — bloque CI/CD pipeline", proj:"CI/CD", days:5, resp:"T. Bernard / DSI" },
+  { title:"Décision progiciel CRM non finalisée — choix entre Salesforce et HubSpot", proj:"CRM", days:3, resp:"DSI + Direction Commerciale" },
+  { title:"RFP Capgemini — réponse deadline 30 avril (App Mobile délai en suspens)", proj:"App Mobile Clients & Fourn.", days:14, resp:"L. Moreau / DSI" },
+];
+
+const PATCHES = [
+  { title:"Office 365 — Environnement de pilote activé (50 comptes)", esn:"Econocom / Interne", date:"18 avr. 2026" },
+  { title:"CI/CD — Premier pipeline Jenkins déployé (env. de dev Refonte Web)", esn:"Équipe interne", date:"15 avr. 2026" },
+  { title:"Refonte Web — Maquettes UX validées par MOA (sprint 1)", esn:"Sopra Steria", date:"14 avr. 2026" },
+];
+
+// ─── RENDU TABLE PROJETS ──────────────────────────────────────────────────
+function ragClass(r) { return 'rag-' + r; }
+function ragLabel(r) { return r==='green'?'● Vert':r==='orange'?'● Orange':r==='red'?'● Rouge':'● Planifié'; }
+function barClass(r) { return r==='green'?'bar-green':r==='orange'?'bar-orange':r==='red'?'bar-red':'bar-blue'; }
+function score(p) { return p.strat*5 + p.rent*3 + p.risque*2; }
+function dotColor(v, max) {
+  const ratio = v/max;
+  return ratio >= .7 ? '#22c55e' : ratio >= .4 ? '#f59e0b' : '#ef4444';
+}
+function dots(val, max, label) {
+  let html = `<div style="font-size:.7rem;color:var(--muted);margin-bottom:2px">${label}</div><div style="display:flex;gap:3px">`;
+  for(let i=1;i<=max;i++) html += `<div style="width:8px;height:8px;border-radius:50%;background:${i<=val?dotColor(val,max):'var(--surface2)'}"></div>`;
+  return html + '</div>';
+}
+
+const tbody = document.getElementById('proj-tbody');
+PROJECTS.forEach(p => {
+  const sc = score(p);
+  const ragC = p.statut === 'Planifié' ? 'rag-blue' : ragClass(p.rag);
+  const ragL = p.statut === 'Planifié' ? '○ Planifié' : ragLabel(p.rag);
+  const barC = p.statut === 'Planifié' ? 'bar-blue' : barClass(p.rag);
+  const advText = p.adv > 0 ? `${p.adv}%` : '—';
+  const depsHtml = p.deps.length ? p.deps.map(d=>`<span class="dep-tag">${d}</span>`).join('') : '<span style="color:var(--muted);font-size:.72rem">Aucune</span>';
+  tbody.innerHTML += `
+    <tr>
+      <td><div class="proj-name">${p.name}</div><div class="proj-desc">${p.desc}</div></td>
+      <td style="font-size:.8rem;white-space:nowrap">${p.debut}</td>
+      <td style="font-size:.8rem;white-space:nowrap">${p.duree}</td>
+      <td style="font-size:.82rem;font-weight:600">${p.budget} K€</td>
+      <td style="font-size:.8rem">${p.charges} j/h</td>
+      <td><div style="text-align:center;font-weight:700;font-size:.9rem;color:${dotColor(p.strat,5)}">${p.strat}/5</div></td>
+      <td><div style="text-align:center;font-weight:700;font-size:.9rem;color:${dotColor(p.rent,5)}">${p.rent}/5</div></td>
+      <td><div style="text-align:center;font-weight:700;font-size:.9rem;color:${dotColor(p.risque,5)}">${p.risque}/5</div></td>
+      <td>
+        <div style="font-weight:700;font-size:.9rem;color:${sc>=40?'#22c55e':sc>=30?'#f59e0b':'#ef4444'}">${sc}</div>
+        <div class="progress-wrap" style="width:60px;margin-top:3px"><div class="progress-bar ${sc>=40?'bar-green':sc>=30?'bar-orange':'bar-red'}" style="width:${sc/50*100}%"></div></div>
+      </td>
+      <td>
+        ${p.adv > 0 ? `<div style="display:flex;align-items:center;gap:8px"><div class="progress-wrap" style="width:70px"><div class="progress-bar ${barC}" style="width:${p.adv}%"></div></div><span style="font-size:.78rem;color:var(--muted)">${advText}</span></div>` : `<span style="font-size:.78rem;color:var(--muted)">Non démarré</span>`}
+      </td>
+      <td><span class="rag ${ragC}">${ragL}</span></td>
+      <td style="font-size:.78rem;color:var(--muted)">${p.chef}</td>
+      <td>${depsHtml}</td>
+    </tr>`;
+});
+
+// ─── UPTIME GRID ──────────────────────────────────────────────────────────
+const uptimeGrid = document.getElementById('uptime-grid');
+SERVERS.forEach(s => {
+  const color = s.rag==='green'?'var(--green)':s.rag==='orange'?'var(--orange)':'var(--red)';
+  uptimeGrid.innerHTML += `
+    <div class="uptime-card">
+      <div><div class="uptime-name">${s.name}</div><div class="uptime-env">${s.env}</div></div>
+      <div class="uptime-pct" style="color:${color}">${s.uptime}%</div>
+    </div>`;
+});
+
+// ─── INCIDENTS ─────────────────────────────────────────────────────────────
+const incList = document.getElementById('incident-list');
+INCIDENTS.forEach(i => {
+  incList.innerHTML += `
+    <div class="incident-item ${i.color}">
+      <span class="inc-badge" style="background:${i.bc};color:${i.tc}">${i.p}</span>
+      <div><div class="inc-title">${i.title}</div><div class="inc-meta">${i.proj} · Depuis ${i.age}</div></div>
+    </div>`;
+});
+
+// ─── ESN LIST ──────────────────────────────────────────────────────────────
+const esnList = document.getElementById('esn-list');
+ESN_CONTACTS.forEach(e => {
+  const cls = e.days <= 7 ? 'days-ok' : e.days <= 21 ? 'days-warn' : 'days-alert';
+  const noteStr = e.note ? `· Note ${e.note}/5` : '· Note à venir';
+  esnList.innerHTML += `
+    <div class="esn-item">
+      <div>
+        <div class="esn-name">${e.name}</div>
+        <div class="esn-proj">${e.proj}</div>
+        <div class="esn-cr">${e.cr} ${noteStr}</div>
+      </div>
+      <div style="text-align:right"><span class="days-badge ${cls}">Il y a ${e.days}j</span></div>
+    </div>`;
+});
+
+// ─── BLOCKING ──────────────────────────────────────────────────────────────
+const blockList = document.getElementById('block-list');
+BLOCKING.forEach(b => {
+  const c = b.days > 10 ? 'var(--red)' : 'var(--orange)';
+  blockList.innerHTML += `
+    <div class="block-item" style="border-left-color:${c}">
+      <div class="block-title">${b.title}</div>
+      <div class="block-meta"><span>📁 ${b.proj}</span><span>👤 ${b.resp}</span><span style="color:${c}">⏱ ${b.days} jours</span></div>
+    </div>`;
+});
+
+// ─── PATCHES ───────────────────────────────────────────────────────────────
+const patchList = document.getElementById('patch-list');
+PATCHES.forEach(p => {
+  patchList.innerHTML += `
+    <div class="patch-item">
+      <div><div class="patch-title">${p.title}</div><div class="patch-meta">${p.esn}</div></div>
+      <div class="patch-date">${p.date}</div>
+    </div>`;
+});
+
+// ─── CHARTS ────────────────────────────────────────────────────────────────
+const C = { tick:'#8892b0', grid:'rgba(46,51,80,.6)', legend:{labels:{color:'#8892b0',font:{size:11}}} };
+function scaleOpts() { return { x:{ticks:{color:C.tick,font:{size:10}},grid:{color:C.grid}}, y:{ticks:{color:C.tick,font:{size:10}},grid:{color:C.grid}} }; }
+
+// Budget mensuel prévisionnel vs réel
+// Prévisionnel : réparti selon calendrier projets
+// Réel : uniquement avril connu
+new Chart(document.getElementById('chartBudget'), {
+  type:'bar',
+  data:{
+    labels:['Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'],
+    datasets:[
+      { label:'Prévisionnel (K€)', data:[56,95,155,195,215,180,220,190,145], backgroundColor:'rgba(59,111,255,.3)', borderRadius:4 },
+      { label:'Réel (K€)', data:[59,null,null,null,null,null,null,null,null], backgroundColor:'rgba(34,197,94,.7)', borderRadius:4 },
+    ]
+  },
+  options:{ maintainAspectRatio:false, plugins:C.legend, scales:scaleOpts() }
+});
+
+// Score de priorité
+const sorted = [...PROJECTS].sort((a,b)=>score(b)-score(a));
+new Chart(document.getElementById('chartPrio'), {
+  type:'bar',
+  data:{
+    labels: sorted.map(p=>p.name.length>14?p.name.substring(0,14)+'…':p.name),
+    datasets:[{
+      label:'Score /50',
+      data: sorted.map(p=>score(p)),
+      backgroundColor: sorted.map(p=>score(p)>=40?'rgba(34,197,94,.7)':score(p)>=30?'rgba(245,158,11,.7)':'rgba(239,68,68,.7)'),
+      borderRadius:4
+    }]
+  },
+  options:{ maintainAspectRatio:false, indexAxis:'y', plugins:{legend:{display:false}}, scales:{ x:{...scaleOpts().x,max:50}, y:{ticks:{color:C.tick,font:{size:9}},grid:{color:C.grid}} } }
+});
+
+// Déploiements hebdomadaires depuis lancement
+new Chart(document.getElementById('chartDeploy'), {
+  type:'bar',
+  data:{
+    labels:['S14 (1-7 Avr)','S15 (8-14 Avr)','S16 (15-20 Avr)'],
+    datasets:[
+      { label:'Déploiements réussis', data:[2,5,7], backgroundColor:'rgba(59,111,255,.75)', borderRadius:5 },
+      { label:'Builds échoués', data:[3,4,4], backgroundColor:'rgba(239,68,68,.5)', borderRadius:5 },
+    ]
+  },
+  options:{ maintainAspectRatio:false, plugins:C.legend, scales:scaleOpts() }
+});
+
+// Burn-down Sprint 2 Refonte Web (10 jours, 45 tickets)
+new Chart(document.getElementById('chartBurndown'), {
+  type:'line',
+  data:{
+    labels:['J1','J2','J3','J4','J5(auj)','J6','J7','J8','J9','J10'],
+    datasets:[
+      { label:'Idéal', data:[45,40,35,30,25,20,15,10,5,0], borderColor:'rgba(139,92,246,.5)', borderDash:[5,3], fill:false, tension:0, pointRadius:2 },
+      { label:'Réel', data:[45,44,41,38,35,null,null,null,null,null], borderColor:'#3b6fff', backgroundColor:'rgba(59,111,255,.07)', fill:true, tension:.3, pointRadius:3, spanGaps:false },
+    ]
+  },
+  options:{ maintainAspectRatio:false, plugins:C.legend, scales:scaleOpts() }
+});
+
+// Charge par développeur (j/h depuis 1er avril)
+new Chart(document.getElementById('chartCharge'), {
+  type:'bar',
+  data:{
+    labels:['K. Rousseau\n(lead)','A. Bernard','L. Durand','M. Martin','T. Simon','J. Garcia','P. Lefèvre'],
+    datasets:[{
+      label:'j/h consommés',
+      data:[15,12,11,13,10,11,12],
+      backgroundColor:['rgba(139,92,246,.8)','rgba(59,111,255,.75)','rgba(59,111,255,.75)','rgba(59,111,255,.75)','rgba(59,111,255,.75)','rgba(59,111,255,.75)','rgba(59,111,255,.75)'],
+      borderRadius:5
+    }]
+  },
+  options:{ maintainAspectRatio:false, indexAxis:'y', plugins:{legend:{display:false}}, scales:{ x:{ticks:{color:C.tick},grid:{color:C.grid}}, y:{ticks:{color:C.tick,font:{size:10}},grid:{color:C.grid}} } }
+});
+
+// Répartition des charges planifiées
+new Chart(document.getElementById('chartCharges'), {
+  type:'doughnut',
+  data:{
+    labels: PROJECTS.map(p=>p.name.length>16?p.name.substring(0,16)+'…':p.name),
+    datasets:[{
+      data: PROJECTS.map(p=>p.charges),
+      backgroundColor:['#3b6fff','#7c3aed','#22c55e','#f59e0b','#ef4444','#06b6d4','#8b5cf6','#f97316','#84cc16','#ec4899','#14b8a6'],
+      borderColor:'#0f1117', borderWidth:2
+    }]
+  },
+  options:{ maintainAspectRatio:false, plugins:{ legend:{ position:'right', labels:{color:'#8892b0',font:{size:9},boxWidth:10} } } }
+});
+
+// Radar des risques
+new Chart(document.getElementById('chartRadar'), {
+  type:'radar',
+  data:{
+    labels: PROJECTS.map(p=>p.name.length>12?p.name.substring(0,12)+'…':p.name),
+    datasets:[
+      { label:'Maîtrise risques (/5)', data: PROJECTS.map(p=>p.risque), borderColor:'#3b6fff', backgroundColor:'rgba(59,111,255,.12)', pointBackgroundColor:'#3b6fff', pointRadius:3 },
+      { label:'Importance stratégique (/5)', data: PROJECTS.map(p=>p.strat), borderColor:'#f59e0b', backgroundColor:'rgba(245,158,11,.07)', pointBackgroundColor:'#f59e0b', pointRadius:3 },
+    ]
+  },
+  options:{
+    maintainAspectRatio:false,
+    plugins:C.legend,
+    scales:{ r:{
+      ticks:{color:C.tick,font:{size:9},backdropColor:'transparent'},
+      grid:{color:C.grid},
+      pointLabels:{color:C.tick,font:{size:8}},
+      min:0, max:5
+    }}
+  }
+});
+</script>
+</body>
+</html>

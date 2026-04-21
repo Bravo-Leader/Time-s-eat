@@ -1,0 +1,150 @@
+% ============================================================
+%  PLAN DE MANAGEMENT PROJET (PMP) — Phase 2 : Planification
+%  Time'Eats — Cellule PMO
+% ============================================================
+\documentclass[11pt,a4paper,oneside]{report}
+\usepackage{../style/consulting}
+\hypersetup{pdftitle={Plan de Management Projet — Time'Eats PMO}}
+\pagestyle{fancy}\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\begin{tikzpicture}[remember picture,overlay]
+  \draw[cnNavy,line width=0.5pt](0,0)--(\textwidth,0);
+\end{tikzpicture}\vspace{2pt}\small\textcolor{cnSlate}{Time'Eats \textbf{·} Plan de Management Projet (PMP) — \textit{[Nom projet]}}}
+\fancyhead[R]{\small\textcolor{cnSlate}{\thepage}}
+\fancyfoot[C]{\tiny\textcolor{cnSlate}{Document confidentiel — Cellule PMO — CESI MAALSI 2026}}
+
+\newcommand{\ragV}{\cellcolor{cnGreen!20}\textbf{\textcolor{cnGreen}{Vert}}}
+\newcommand{\ragA}{\cellcolor{cnOrange!20}\textbf{\textcolor{cnOrange}{Ambre}}}
+\newcommand{\ragR}{\cellcolor{cnRed!20}\textbf{\textcolor{cnRed}{Rouge}}}
+
+\begin{document}\small
+
+\begin{center}
+{\LARGE\bfseries\color{cnNavy} Plan de Management Projet}\\[4pt]
+\textcolor{cnOrange}{\rule{10cm}{1pt}}\\[4pt]
+{\large\color{cnSlate} Phase 2 — Planification \quad|\quad Projet : \textit{[Nom du projet]}}
+\end{center}
+
+\vspace{4pt}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\textwidth}{L{3.5cm} Y L{3.5cm} Y}
+\toprule
+\rowcolor{cnNavy}\th{Champ} & \th{Valeur} & \th{Champ} & \th{Valeur} \\
+\midrule
+Nom du projet   & \textit{[Nom]}         & Version PMP    & 1.0 \\
+\rowcolor{cnIce}
+Chef de projet  & \textit{[Prénom NOM]}  & Date           & \textit{[JJ/MM/AAAA]} \\
+Budget total    & \textit{[XXX K€]}      & Mode exécution & $\square$ Waterfall \quad $\square$ Agile \\
+\rowcolor{cnIce}
+Durée estimée   & \textit{[X mois]}      & Statut         & \textit{[Phase]} \\
+\bottomrule
+\end{tabularx}
+
+% ── 1. Périmètre ──────────────────────────────────────────
+\section*{1 — Périmètre}
+
+\textit{[Décrire ce que le projet produit : fonctionnalités livrées, systèmes concernés, intégrations.]}
+
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{L{1.5cm} Y}
+\toprule
+\rowcolor{cnNavy}\th{} & \th{} \\
+\midrule
+\cellcolor{cnGreen!20}\textbf{In}  & \textit{[Éléments inclus]} \\
+\rowcolor{cnIce}
+\cellcolor{cnRed!20}\textbf{Out} & \textit{[Éléments exclus]} \\
+\bottomrule
+\end{tabularx}
+
+% ── 2. Planning et jalons ─────────────────────────────────
+\section*{2 — Planning et jalons}
+
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{C{1cm} L{5cm} Y C{2.5cm} C{2cm}}
+\toprule
+\rowcolor{cnNavy}\th{\#} & \th{Jalon} & \th{Livrable} & \th{Date cible} & \th{Statut} \\
+\midrule
+J0 & Démarrage officiel & Charte signée & \textit{[date]} & \textit{[RAG]} \\
+\rowcolor{cnIce}
+J1 & \textit{[Jalon 1]} & \textit{[Livrable 1]} & \textit{[date]} & \textit{[RAG]} \\
+J2 & \textit{[Jalon 2]} & \textit{[Livrable 2]} & \textit{[date]} & \textit{[RAG]} \\
+\rowcolor{cnIce}
+J3 & \textit{[Jalon 3]} & \textit{[Livrable 3]} & \textit{[date]} & \textit{[RAG]} \\
+Jn & Clôture & PV recette + REX & \textit{[date]} & \textit{[RAG]} \\
+\bottomrule
+\end{tabularx}
+
+% ── 3. Budget ─────────────────────────────────────────────
+\section*{3 — Budget}
+
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{L{5cm} C{2.5cm} C{2.5cm} Y}
+\toprule
+\rowcolor{cnNavy}\th{Poste} & \th{Montant (K€)} & \th{\% total} & \th{Commentaire} \\
+\midrule
+Licences / progiciel   & \textit{[X]}  & \textit{[X\%]} & \textit{[précisions]} \\
+\rowcolor{cnIce}
+Intégration ESN        & \textit{[X]}  & \textit{[X\%]} & \textit{[précisions]} \\
+Ressources internes    & \textit{[X]}  & \textit{[X\%]} & \textit{[précisions]} \\
+\rowcolor{cnIce}
+Formation              & \textit{[X]}  & \textit{[X\%]} & \textit{[précisions]} \\
+Recette et tests       & \textit{[X]}  & \textit{[X\%]} & \textit{[précisions]} \\
+\rowcolor{cnIce}
+Réserve pour aléas     & \textit{[X]}  & \textit{[X\%]} & 10\% recommandé \\
+\midrule
+\rowcolor{cnNavy!10}\textbf{TOTAL} & \textbf{\textit{[X K€]}} & \textbf{100\%} & \\
+\bottomrule
+\end{tabularx}
+
+% ── 4. Registre des risques ───────────────────────────────
+\section*{4 — Registre des risques}
+
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{C{0.5cm} L{4cm} C{1.5cm} C{1.5cm} C{1.5cm} Y}
+\toprule
+\rowcolor{cnNavy}\th{\#} & \th{Risque} & \th{Proba (1–5)} & \th{Impact (1–5)} & \th{Score} & \th{Plan de mitigation} \\
+\midrule
+1 & \textit{[Risque 1]} & \textit{[P]} & \textit{[I]} & \textit{[P×I]} & \textit{[Action préventive]} \\
+\rowcolor{cnIce}
+2 & \textit{[Risque 2]} & \textit{[P]} & \textit{[I]} & \textit{[P×I]} & \textit{[Action préventive]} \\
+3 & \textit{[Risque 3]} & \textit{[P]} & \textit{[I]} & \textit{[P×I]} & \textit{[Action préventive]} \\
+\rowcolor{cnIce}
+4 & \textit{[Risque 4]} & \textit{[P]} & \textit{[I]} & \textit{[P×I]} & \textit{[Action préventive]} \\
+5 & \textit{[Risque 5]} & \textit{[P]} & \textit{[I]} & \textit{[P×I]} & \textit{[Action préventive]} \\
+\bottomrule
+\end{tabularx}
+
+% ── 5. Plan de communication ──────────────────────────────
+\section*{5 — Plan de communication}
+
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{L{4cm} L{3cm} Y C{2cm}}
+\toprule
+\rowcolor{cnNavy}\th{Communication} & \th{Destinataires} & \th{Canal / Format} & \th{Fréquence} \\
+\midrule
+Stand-up équipe & Équipe projet & Teams / 15 min & Quotidien \\
+\rowcolor{cnIce}
+CR d'avancement & DSI, Sponsors & Email + SharePoint & Hebdomadaire \\
+Tableau de bord & DSI, DG & SharePoint / PDF & Mensuel \\
+\rowcolor{cnIce}
+COPIL & DSI, DG, ESN & Réunion + CR & Mensuel \\
+Rapport d'écarts & DSI & Email + SharePoint & Si écart \\
+\bottomrule
+\end{tabularx}
+
+% ── 6. Ressources ─────────────────────────────────────────
+\section*{6 — Ressources}
+
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{L{4cm} L{3cm} Y C{2cm}}
+\toprule
+\rowcolor{cnNavy}\th{Ressource} & \th{Rôle} & \th{Activités principales} & \th{\% affec.} \\
+\midrule
+\textit{[Prénom NOM]} & Chef de projet & Pilotage, CR, COPIL & \textit{[X\%]} \\
+\rowcolor{cnIce}
+\textit{[Prénom NOM]} & \textit{[Rôle]} & \textit{[Activités]} & \textit{[X\%]} \\
+ESN \textit{[Nom]} & Intégrateur & \textit{[Activités]} & Forfait \\
+\bottomrule
+\end{tabularx}
+
+\end{document}

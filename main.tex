@@ -1,0 +1,78 @@
+\documentclass[11pt,a4paper,oneside]{report}
+
+\usepackage{style/consulting}
+
+\graphicspath{
+  {images/}
+  {c:/Users/VirgileCOUDERT/Documents/CESI/MALSI/Sujet-Bloc-individuel-1/document/images/}
+  {../document/images/}
+}
+
+\addbibresource{references.bib}
+
+\begin{document}
+\small
+
+% ── Couverture ───────────────────────────────────────────────
+\input{content/00-cover}
+
+% ── Résumé exécutif
+\input{content/00-executive-summary}
+
+% ── Table des matières ───────────────────────────────────────
+\tableofcontents
+
+% ============================================================
+% PARTIE 1 — ANALYSE DE L'EXISTANT
+% ============================================================
+\chapter{Analyse de l'existant}
+\label{chap:analyse}
+
+\input{content/part1/01-audit}
+\input{content/part1/02-schema}
+\input{content/part1/03-contexte}
+\input{content/part1/04-exigences}
+
+% ============================================================
+% PARTIE 2 — CONCEPTION DE LA NOUVELLE ARCHITECTURE
+% ============================================================
+\chapter{Conception de la nouvelle architecture logicielle}
+\label{chap:conception}
+
+\input{content/part2/05-choix-architecture}
+\input{content/part2/06-matrices}
+\input{content/part2/07-vue-fonctionnelle}
+\input{content/part2/08-vue-physique}
+\input{content/part2/09-vue-technique}
+\input{content/part2/10-securite}
+\input{content/part2/11-metriques}
+
+% ============================================================
+% PARTIE 3 — CONSEIL AUX DÉCIDEURS
+% ============================================================
+\chapter{Conseil aux décideurs}
+\label{chap:conseil}
+
+\input{content/part3/12-kpis}
+\input{content/part3/13-dashboard}
+\input{content/part3/14-projets}
+\input{content/part3/15-roadmap}
+
+% ============================================================
+% ANNEXES
+% ============================================================
+\clearpage
+\appendix
+\phantomsection
+\addcontentsline{toc}{chapter}{Annexes}
+{\Large\bfseries\color{cnNavy} Annexes\par}
+\vspace{8pt}
+
+\input{content/annexes/A1-biblio}
+\input{content/annexes/A2-c4}
+
+{\footnotesize
+\printbibliography[heading=bibintoc, title={R\'{e}f\'{e}rences}]
+}
+
+\end{document}

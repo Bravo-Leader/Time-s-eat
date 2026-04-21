@@ -1,0 +1,24 @@
+# LaTeX build artifacts
+*.aux
+*.bcf
+*.log
+*.out
+*.run.xml
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.blg
+*.bbl
+
+# Temp files
+~$*
+*.tmp
+
+# Node
+node_modules/
+cockpit-dsi/node_modules/
+
+# OS
+.DS_Store
+Thumbs.db

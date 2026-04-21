@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \"import openpyxl; wb = openpyxl.load_workbook\\(r'C:\\\\Users\\\\v.coudert\\\\Documents\\\\CESI\\\\MAALSI\\\\Semestre 2\\\\Projet Collaboratif 2\\\\grille d\\\\'évaluation Projet collaboratif superviser portefeuille projets.xlsx'\\); [print\\(f'=== Sheet: {sheet} ===', [[cell.value for cell in row] for row in wb[sheet].iter_rows\\(\\)], sep='\\\\n'\\) for sheet in wb.sheetnames]\")",
+      "Bash(python -c \"import pandas as pd; xls = pd.ExcelFile\\(r'C:\\\\Users\\\\v.coudert\\\\Documents\\\\CESI\\\\MAALSI\\\\Semestre 2\\\\Projet Collaboratif 2\\\\grille d\\\\'évaluation Projet collaboratif superviser portefeuille projets.xlsx'\\); [print\\(f'\\\\n=== {sheet} ===\\\\n', pd.read_excel\\(xls, sheet_name=sheet\\).to_string\\(\\)\\) for sheet in xls.sheet_names]\")",
+      "Bash(curl -s http://localhost:3001/api/crm)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('jalons:', [j['id']+' '+j['statut'] for j in d['jalons']]\\)\")"
+    ]
+  }
+}
