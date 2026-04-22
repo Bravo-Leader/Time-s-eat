@@ -22,3 +22,6 @@ cockpit-dsi/node_modules/
 # OS
 .DS_Store
 Thumbs.db
+
+# Runtime DB (régénéré au démarrage)
+cockpit-dsi/db.json
